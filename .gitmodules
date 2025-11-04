@@ -1,0 +1,6 @@
+[submodule "navigation_controller"]
+	path = navigation_controller
+	url = https://github.com/Biorobotica-UNAM/navigation_controller.git
+[submodule "navigation_planner"]
+	path = navigation_planner
+	url = https://github.com/Biorobotica-UNAM/navigation_planner.git
