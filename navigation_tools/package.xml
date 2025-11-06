@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>navigation_tools</name>
+  <version>0.1.0</version>
+  <description>Navigation Tools</description>
+  <maintainer email="marco.soriano5102@comunidad.unam.mx">Marco Soriano</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>rclcpp</depend>
+  <depend>std_msgs</depend>
+  <depend>nlohmann_json</depend>
+  <depend>known_locations_interfaces</depend>
+  <!-- <depend>geometry_msgs</depend> -->
+  <!-- <depend>robotino_msgs</depend> -->
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
