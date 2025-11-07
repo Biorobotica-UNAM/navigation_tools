@@ -8,16 +8,14 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(nlohmann_json REQUIRED)
 find_package(known_locations_interfaces REQUIRED)
-#find_package(geometry_msgs REQUIRED)
-#find_package(robotino_msgs REQUIRED)
-
+find_package(std_srvs REQUIRED)
+# find_package(geometry_msgs REQUIRED)
+# find_package(robotino_msgs REQUIRED)
 
 include_directories(
   include
   ${rclcpp_INCLUDE_DIRS}
   ${std_msgs_INCLUDE_DIRS}
-#  ${geometry_msgs_INCLUDE_DIRS}
-#  ${robotino_msgs_INCLUDE_DIRS}
 )
 
 add_library(navigation_tools SHARED
@@ -29,9 +27,7 @@ ament_target_dependencies(navigation_tools
   std_msgs
   nlohmann_json
   known_locations_interfaces
-#  geometry_msgs
-#  robotino_msgs
-
+  std_srvs
 )
 
 install(DIRECTORY include/
@@ -44,5 +40,12 @@ install(TARGETS navigation_tools
 
 ament_export_include_directories(include)
 ament_export_libraries(navigation_tools)
+ament_export_dependencies(
+  rclcpp
+  std_msgs
+  nlohmann_json
+  known_locations_interfaces
+  std_srvs
+)
 
 ament_package()

@@ -29,4 +29,3 @@ bool Navigation::goTo(const std::string& location_name)
     RCLCPP_WARN(node_->get_logger(), "No se recibió respuesta confiable del servicio");
     return false;
 }
-

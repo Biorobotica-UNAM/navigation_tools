@@ -12,6 +12,8 @@
   <depend>std_msgs</depend>
   <depend>nlohmann_json</depend>
   <depend>known_locations_interfaces</depend>
+  <depend>std_srvs</depend>
+
   <!-- <depend>geometry_msgs</depend> -->
   <!-- <depend>robotino_msgs</depend> -->
 
