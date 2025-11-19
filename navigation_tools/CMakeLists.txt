@@ -38,6 +38,11 @@ install(TARGETS navigation_tools
   DESTINATION lib
 )
 
+install(
+  DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME}
+)
+
 ament_export_include_directories(include)
 ament_export_libraries(navigation_tools)
 ament_export_dependencies(

@@ -1,0 +1,24 @@
+<launch>
+
+  <arg name="namespace"
+       default="hardware/robotino"
+       description="" />
+
+  <arg name="use_nav"
+       default="true"
+       description="" />
+
+  <group if="$(var use_nav)">
+    <include file="$(find-pkg-share navigation_start)/navigation.launch.xml">
+      <arg name="namespace" value="$(var namespace)" />
+    </include>
+
+    <node
+      pkg="known_locations_tf_server"
+      exec="known_locs_node_nav"
+      name="known_locations_tf_server"
+      output="screen"
+    />
+  </group>
+
+</launch>
