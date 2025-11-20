@@ -9,7 +9,7 @@
        description="" />
 
   <group if="$(var use_nav)">
-    <include file="$(find-pkg-share navigation_start)/navigation.launch.xml">
+    <include file="$(find-pkg-share navigation_start)/launch/navigation.launch.xml">
       <arg name="namespace" value="$(var namespace)" />
     </include>
 
