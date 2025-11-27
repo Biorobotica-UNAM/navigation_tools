@@ -6,7 +6,7 @@ Navigation::Navigation(rclcpp::Node::SharedPtr node)
     client_goal_ = node_->create_client<known_locations_interfaces::srv::LocationsServer>("/known_location_goal");
 }
 
-bool Navigation::goTo(const std::string& location_name)
+bool Navigation::GoTo(const std::string& location_name)
 {
     auto request = std::make_shared<known_locations_interfaces::srv::LocationsServer::Request>();
     request->location_name = location_name;
@@ -19,7 +19,7 @@ bool Navigation::goTo(const std::string& location_name)
 
     auto future = client_goal_->async_send_request(request);
 
-    if (rclcpp::spin_until_future_complete(node_, future, std::chrono::seconds(10)) 
+    if (rclcpp::spin_until_future_complete(node_, future, std::chrono::seconds(125)) 
         == rclcpp::FutureReturnCode::SUCCESS)
     {
         auto response = future.get();

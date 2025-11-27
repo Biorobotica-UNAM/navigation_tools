@@ -15,5 +15,5 @@ private:
 public:
     Navigation(rclcpp::Node::SharedPtr node);
 
-    bool goTo(const std::string& location_name);
+    bool GoTo(const std::string& location_name);
 };
