@@ -1,4 +1,4 @@
-#include "navigation_tools/Navigation.h"
+#include "navigation_tools/Navigation.hpp"
 
 Navigation::Navigation(rclcpp::Node::SharedPtr node)
     : node_(node)
