@@ -19,7 +19,11 @@ bool Navigation::GoTo(const std::string& location_name)
 
     auto future = client_goal_->async_send_request(request);
 
+<<<<<<< Updated upstream
     if (rclcpp::spin_until_future_complete(node_, future, std::chrono::seconds(125)) 
+=======
+    if (rclcpp::spin_until_future_complete(node_, future, std::chrono::seconds(120)) 
+>>>>>>> Stashed changes
         == rclcpp::FutureReturnCode::SUCCESS)
     {
         auto response = future.get();
