@@ -1,2 +1,2 @@
-# Navigation
-Biorobotis-Lab Navigation module
+# navigation_tools
+Biorobotis-Lab Navigation utilities
