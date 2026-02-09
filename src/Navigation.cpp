@@ -1,57 +1,86 @@
 #include "navigation_tools/Navigation.hpp"
 
-#include <chrono>
-#include <future>
+using namespace std::chrono_literals;
 
-Navigation::Navigation(rclcpp::Node::SharedPtr node)
-    : node_(std::move(node))
+Navigation::Navigation(const rclcpp::Node::SharedPtr& node)
+    : node_(node)
 {
     client_goal_ =
-        node_->create_client<known_locations_interfaces::srv::LocationsServer>("/known_location_goal");
+        node_->create_client<
+            known_locations_interfaces::srv::LocationsServer>(
+                "/known_location_goal");
 }
+
+// ---------------------------------------------------------
+// Wait for service
+// ---------------------------------------------------------
+
+bool Navigation::waitForService(
+    const rclcpp::ClientBase::SharedPtr& client,
+    const std::chrono::milliseconds& timeout) const
+{
+    return client->wait_for_service(timeout);
+}
+
+// ---------------------------------------------------------
+// GoTo
+// ---------------------------------------------------------
 
 bool Navigation::GoTo(const std::string& location_name)
 {
-    using namespace std::chrono_literals;
-
-    auto request =
-        std::make_shared<known_locations_interfaces::srv::LocationsServer::Request>();
-    request->location_name = location_name;
-
-    if (!client_goal_->wait_for_service(500ms))
+    if (!waitForService(client_goal_, 500ms))
     {
-        RCLCPP_WARN(node_->get_logger(), "Servicio /known_location_goal no disponible");
+        RCLCPP_WARN(node_->get_logger(),
+                    "Servicio /known_location_goal no disponible");
         return false;
     }
 
-    // Executor-safe: NO spin dentro de la tool.
-    auto prom = std::make_shared<std::promise<bool>>();
-    auto fut = prom->get_future();
+    auto request =
+        std::make_shared<
+            known_locations_interfaces::srv::LocationsServer::Request>();
+    request->location_name = location_name;
+
+    std::mutex mtx;
+    std::condition_variable cv;
+    bool done = false;
+    bool success = false;
 
     client_goal_->async_send_request(
         request,
-        [this, prom, location_name](
-            std::shared_future<known_locations_interfaces::srv::LocationsServer::Response::SharedPtr> future)
+        [this, &mtx, &cv, &done, &success, location_name](
+            rclcpp::Client<
+                known_locations_interfaces::srv::LocationsServer>::SharedFuture future)
         {
             try
             {
                 auto response = future.get();
-                prom->set_value(response->success);
+                success = response->success;
             }
             catch (const std::exception& e)
             {
                 RCLCPP_WARN(node_->get_logger(),
-                            "Excepción en respuesta /known_location_goal (%s): %s",
+                            "Excepción en /known_location_goal (%s): %s",
                             location_name.c_str(), e.what());
-                prom->set_value(false);
+                success = false;
             }
+
+            {
+                std::lock_guard<std::mutex> lock(mtx);
+                done = true;
+            }
+            cv.notify_one();
         });
 
-    if (fut.wait_for(120s) == std::future_status::ready)
-        return fut.get();
+    std::unique_lock<std::mutex> lock(mtx);
 
-    RCLCPP_WARN(node_->get_logger(),
-                "Timeout esperando respuesta de /known_location_goal (%s)",
-                location_name.c_str());
-    return false;
+    if (!cv.wait_for(lock, 120s, [&]{ return done; }))
+    {
+        RCLCPP_WARN(node_->get_logger(),
+                    "Timeout esperando /known_location_goal (%s)",
+                    location_name.c_str());
+        return false;
+    }
+
+    return success;
 }
+
