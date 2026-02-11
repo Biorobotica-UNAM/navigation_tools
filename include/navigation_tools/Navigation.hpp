@@ -7,7 +7,7 @@
 #include <condition_variable>
 
 #include "rclcpp/rclcpp.hpp"
-#include "known_locations_interfaces/srv/locations_server.hpp"
+#include "known_locations_interfaces/srv/locations_get.hpp"
 
 class Navigation
 {
@@ -24,8 +24,6 @@ private:
 private:
     rclcpp::Node::SharedPtr node_;
 
-    rclcpp::Client<
-        known_locations_interfaces::srv::LocationsServer
-    >::SharedPtr client_goal_;
+    rclcpp::Client<known_locations_interfaces::srv::LocationsGet>::SharedPtr client_goal_;
 };
 
