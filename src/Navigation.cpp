@@ -6,9 +6,8 @@ Navigation::Navigation(const rclcpp::Node::SharedPtr& node)
     : node_(node)
 {
     client_goal_ =
-        node_->create_client<
-            known_locations_interfaces::srv::LocationsServer>(
-                "/known_location_goal");
+        node_->create_client<known_locations_interfaces::srv::LocationsGet>(
+                "/nav_controller/go_to_location");
 }
 
 // ---------------------------------------------------------
@@ -31,13 +30,13 @@ bool Navigation::GoTo(const std::string& location_name)
     if (!waitForService(client_goal_, 500ms))
     {
         RCLCPP_WARN(node_->get_logger(),
-                    "Servicio /known_location_goal no disponible");
+                    "Servicio /nav_controller/go_to_location no disponible");
         return false;
     }
 
     auto request =
         std::make_shared<
-            known_locations_interfaces::srv::LocationsServer::Request>();
+            known_locations_interfaces::srv::LocationsGet::Request>();
     request->location_name = location_name;
 
     std::mutex mtx;
@@ -49,7 +48,7 @@ bool Navigation::GoTo(const std::string& location_name)
         request,
         [this, &mtx, &cv, &done, &success, location_name](
             rclcpp::Client<
-                known_locations_interfaces::srv::LocationsServer>::SharedFuture future)
+                known_locations_interfaces::srv::LocationsGet>::SharedFuture future)
         {
             try
             {
@@ -59,7 +58,7 @@ bool Navigation::GoTo(const std::string& location_name)
             catch (const std::exception& e)
             {
                 RCLCPP_WARN(node_->get_logger(),
-                            "Excepción en /known_location_goal (%s): %s",
+                            "Excepción en /nav_controller/go_to_location (%s): %s",
                             location_name.c_str(), e.what());
                 success = false;
             }
@@ -76,7 +75,7 @@ bool Navigation::GoTo(const std::string& location_name)
     if (!cv.wait_for(lock, 120s, [&]{ return done; }))
     {
         RCLCPP_WARN(node_->get_logger(),
-                    "Timeout esperando /known_location_goal (%s)",
+                    "Timeout esperando /nav_controller/go_to_location (%s)",
                     location_name.c_str());
         return false;
     }
