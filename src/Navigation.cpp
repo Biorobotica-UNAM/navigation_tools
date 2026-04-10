@@ -8,6 +8,10 @@ Navigation::Navigation(const rclcpp::Node::SharedPtr& node)
     client_goal_ =
         node_->create_client<known_locations_interfaces::srv::LocationsGet>(
                 "/nav_controller/go_to_location");
+    
+    client_add_location_ =
+        node_->create_client<known_locations_interfaces::srv::LocationsServer>(
+                "/locations_manager/add_location");
 }
 
 // ---------------------------------------------------------
@@ -83,3 +87,45 @@ bool Navigation::GoTo(const std::string& location_name)
     return success;
 }
 
+bool Navigation::AddLocation(const std::string& location_name)
+{
+    using namespace std::chrono_literals;
+
+    if (!waitForService(client_add_location_, 500ms))
+    {
+        RCLCPP_WARN(node_->get_logger(),
+            "Servicio /locations_manager/add_location no disponible");
+        return false;
+    }
+
+    auto request = std::make_shared<known_locations_interfaces::srv::LocationsServer::Request>();
+    request->location_name = location_name;
+
+    auto prom = std::make_shared<std::promise<bool>>();
+    auto fut = prom->get_future();
+
+    client_add_location_->async_send_request(
+        request,
+        [this, prom](
+            std::shared_future<
+                known_locations_interfaces::srv::LocationsServer::Response::SharedPtr> future)
+        {
+            try
+            {
+                prom->set_value(future.get()->success);
+            }
+            catch (const std::exception& e)
+            {
+                RCLCPP_WARN(node_->get_logger(),
+                    "Excepción en AddLocation: %s", e.what());
+                prom->set_value(false);
+            }
+        });
+
+    if (fut.wait_for(500ms) == std::future_status::ready)
+        return fut.get();
+
+    RCLCPP_WARN(node_->get_logger(),
+        "Timeout esperando AddLocation");
+    return false;
+}
