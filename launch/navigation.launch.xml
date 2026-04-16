@@ -1,6 +1,6 @@
 <launch>
 
-  <arg name="namespace_nav"
+  <arg name="namespace"
        default="navigation"
        description="" />
 
@@ -10,7 +10,7 @@
 
   <group if="$(var use_nav)">
     <include file="$(find-pkg-share navigation_start)/launch/navigation.launch.xml">
-      <arg name="namespace_nav" value="$(var namespace)" />
+      <arg name="namespace" value="$(var namespace)" />
     </include>
 
     <node
