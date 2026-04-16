@@ -1,7 +1,7 @@
 <launch>
 
-  <arg name="namespace"
-       default="hardware/robotino"
+  <arg name="namespace_nav"
+       default="navigation"
        description="" />
 
   <arg name="use_nav"
