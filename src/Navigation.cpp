@@ -92,10 +92,9 @@ bool Navigation::AddLocation(
 
                     RCLCPP_INFO(
                         node_->get_logger(),
-                        "AddLocation [%s] %s: %s",
+                        "AddLocation [%s] %s",
                         location_name.c_str(),
-                        success ? "SUCCESS" : "FAILED",
-                        response->message.c_str());
+                        success ? "SUCCESS" : "FAILED");
                 },
                 timeout,
                 "AddLocation");
