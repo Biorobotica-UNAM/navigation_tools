@@ -46,6 +46,11 @@ using namespace std::chrono_literals;
 class Navigation
 {
 public:
+    struct NavigationResult
+    {
+        bool success{false};
+        std::string message;
+    };
 
     explicit Navigation(const rclcpp::Node::SharedPtr& node);
 
@@ -58,7 +63,10 @@ public:
      * @return true if navigation succeeded.
      */
     bool GoTo(const std::string& location_name,
-              std::chrono::seconds timeout = 120s);
+              std::chrono::seconds timeout = 300s);
+
+    NavigationResult GoToDetailed(const std::string& location_name,
+                                  std::chrono::seconds timeout = 300s);
 
     /**
      * @brief Save current robot pose as a known location.

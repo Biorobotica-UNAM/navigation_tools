@@ -35,13 +35,20 @@ Navigation::Navigation(const rclcpp::Node::SharedPtr& node)
 bool Navigation::GoTo(const std::string& location_name,
                       std::chrono::seconds timeout)
 {
+    return GoToDetailed(location_name, timeout).success;
+}
+
+Navigation::NavigationResult
+Navigation::GoToDetailed(const std::string& location_name,
+                         std::chrono::seconds timeout)
+{
     auto request =
         std::make_shared<
             known_locations_interfaces::srv::LocationsGet::Request>();
 
     request->location_name = location_name;
 
-    bool success = false;
+    NavigationResult result;
 
     bool completed =
         call_service<
@@ -50,19 +57,25 @@ bool Navigation::GoTo(const std::string& location_name,
                 request,
                 [&](auto response)
                 {
-                    success = response->success;
+                    result.success = response->success;
+                    result.message = response->message;
 
                     RCLCPP_INFO(
                         node_->get_logger(),
                         "GoTo [%s] %s: %s",
                         location_name.c_str(),
-                        success ? "SUCCESS" : "FAILED",
+                        result.success ? "SUCCESS" : "FAILED",
                         response->message.c_str());
                 },
                 timeout,
                 "GoTo");
 
-    return completed && success;
+    if (!completed) {
+        result.success = false;
+        result.message = "GoTo service unavailable, timed out, or threw an exception";
+    }
+
+    return result;
 }
 
 // ============================================================
