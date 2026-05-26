@@ -11,7 +11,9 @@ Navigation::Navigation(const rclcpp::Node::SharedPtr& node)
         node_->create_callback_group(
             rclcpp::CallbackGroupType::Reentrant);
 
-    const rclcpp::QoS qos = rclcpp::ServicesQoS();
+    // Guys, please. Make sure the code compiles with ROS 2 Humble too. We talked about this!!!
+    //const rclcpp::QoS qos = rclcpp::ServicesQoS();
+    const rmw_qos_profile_t qos = rmw_qos_profile_services_default;
 
     go_to_client_ =
         node_->create_client<
