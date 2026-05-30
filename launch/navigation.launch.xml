@@ -7,10 +7,22 @@
   <arg name="use_nav"
        default="true"
        description="" />
+  <arg name="use_sim_time"
+       default="false"
+       description="" />
+  <arg name="use_lidar"
+       default="true"
+       description="" />
+  <arg name="use_point_cloud"
+       default="true"
+       description="" />
 
   <group if="$(var use_nav)">
     <include file="$(find-pkg-share navigation_start)/launch/navigation.launch.xml">
       <arg name="namespace" value="$(var namespace)" />
+      <arg name="use_sim_time" value="$(var use_sim_time)" />
+      <arg name="use_lidar" value="$(var use_lidar)" />
+      <arg name="use_point_cloud" value="$(var use_point_cloud)" />
     </include>
 
     <node
@@ -18,14 +30,18 @@
       exec="locations_manager_node"
       name="locations_manager_node"
       output="screen"
-    />
+    >
+      <param name="use_sim_time" value="$(var use_sim_time)" />
+    </node>
 
     <node
       pkg="nav_controller"
       exec="nav_controller_node"
       name="nav_controller_node"
       output="screen"
-      />
+      >
+      <param name="use_sim_time" value="$(var use_sim_time)" />
+    </node>
   </group>
 
 </launch>

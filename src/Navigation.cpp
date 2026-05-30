@@ -1,131 +1,118 @@
 #include "navigation_tools/Navigation.hpp"
 
-using namespace std::chrono_literals;
+// ============================================================
+// Constructor
+// ============================================================
 
 Navigation::Navigation(const rclcpp::Node::SharedPtr& node)
-    : node_(node)
+: node_(node)
 {
-    client_goal_ =
-        node_->create_client<known_locations_interfaces::srv::LocationsGet>(
-                "/nav_controller/go_to_location");
-    
-    client_add_location_ =
-        node_->create_client<known_locations_interfaces::srv::LocationsServer>(
-                "/locations_manager/add_location");
+    cb_group_clients_ =
+        node_->create_callback_group(
+            rclcpp::CallbackGroupType::Reentrant);
+
+    // Guys, please. Make sure the code compiles with ROS 2 Humble too. We talked about this!!!
+    //const rclcpp::QoS qos = rclcpp::ServicesQoS();
+    const rmw_qos_profile_t qos = rmw_qos_profile_services_default;
+
+    go_to_client_ =
+        node_->create_client<
+            known_locations_interfaces::srv::LocationsGet>(
+                "/nav_controller/go_to_location",
+                qos,
+                cb_group_clients_);
+
+    add_location_client_ =
+        node_->create_client<
+            known_locations_interfaces::srv::LocationsServer>(
+                "/locations_manager/add_location",
+                qos,
+                cb_group_clients_);
 }
 
-// ---------------------------------------------------------
-// Wait for service
-// ---------------------------------------------------------
-
-bool Navigation::waitForService(
-    const rclcpp::ClientBase::SharedPtr& client,
-    const std::chrono::milliseconds& timeout) const
-{
-    return client->wait_for_service(timeout);
-}
-
-// ---------------------------------------------------------
+// ============================================================
 // GoTo
-// ---------------------------------------------------------
+// ============================================================
 
-bool Navigation::GoTo(const std::string& location_name)
+bool Navigation::GoTo(const std::string& location_name,
+                      std::chrono::seconds timeout)
 {
-    if (!waitForService(client_goal_, 500ms))
-    {
-        RCLCPP_WARN(node_->get_logger(),
-                    "Servicio /nav_controller/go_to_location no disponible");
-        return false;
-    }
+    return GoToDetailed(location_name, timeout).success;
+}
 
+Navigation::NavigationResult
+Navigation::GoToDetailed(const std::string& location_name,
+                         std::chrono::seconds timeout)
+{
     auto request =
         std::make_shared<
             known_locations_interfaces::srv::LocationsGet::Request>();
+
     request->location_name = location_name;
 
-    std::mutex mtx;
-    std::condition_variable cv;
-    bool done = false;
-    bool success = false;
+    NavigationResult result;
 
-    client_goal_->async_send_request(
-        request,
-        [this, &mtx, &cv, &done, &success, location_name](
-            rclcpp::Client<
-                known_locations_interfaces::srv::LocationsGet>::SharedFuture future)
-        {
-            try
-            {
-                auto response = future.get();
-                success = response->success;
-            }
-            catch (const std::exception& e)
-            {
-                RCLCPP_WARN(node_->get_logger(),
-                            "Excepción en /nav_controller/go_to_location (%s): %s",
-                            location_name.c_str(), e.what());
-                success = false;
-            }
+    bool completed =
+        call_service<
+            known_locations_interfaces::srv::LocationsGet>(
+                go_to_client_,
+                request,
+                [&](auto response)
+                {
+                    result.success = response->success;
+                    result.message = response->message;
 
-            {
-                std::lock_guard<std::mutex> lock(mtx);
-                done = true;
-            }
-            cv.notify_one();
-        });
+                    RCLCPP_INFO(
+                        node_->get_logger(),
+                        "GoTo [%s] %s: %s",
+                        location_name.c_str(),
+                        result.success ? "SUCCESS" : "FAILED",
+                        response->message.c_str());
+                },
+                timeout,
+                "GoTo");
 
-    std::unique_lock<std::mutex> lock(mtx);
-
-    if (!cv.wait_for(lock, 120s, [&]{ return done; }))
-    {
-        RCLCPP_WARN(node_->get_logger(),
-                    "Timeout esperando /nav_controller/go_to_location (%s)",
-                    location_name.c_str());
-        return false;
+    if (!completed) {
+        result.success = false;
+        result.message = "GoTo service unavailable, timed out, or threw an exception";
     }
 
-    return success;
+    return result;
 }
 
-bool Navigation::AddLocation(const std::string& location_name)
+// ============================================================
+// AddLocation
+// ============================================================
+
+bool Navigation::AddLocation(
+    const std::string& location_name,
+    std::chrono::seconds timeout)
 {
-    using namespace std::chrono_literals;
+    auto request =
+        std::make_shared<
+            known_locations_interfaces::srv::LocationsServer::Request>();
 
-    if (!waitForService(client_add_location_, 500ms))
-    {
-        RCLCPP_WARN(node_->get_logger(),
-            "Servicio /locations_manager/add_location no disponible");
-        return false;
-    }
-
-    auto request = std::make_shared<known_locations_interfaces::srv::LocationsServer::Request>();
     request->location_name = location_name;
 
-    auto prom = std::make_shared<std::promise<bool>>();
-    auto fut = prom->get_future();
+    bool success = false;
 
-    client_add_location_->async_send_request(
-        request,
-        [this, prom](
-            std::shared_future<
-                known_locations_interfaces::srv::LocationsServer::Response::SharedPtr> future)
-        {
-            try
-            {
-                prom->set_value(future.get()->success);
-            }
-            catch (const std::exception& e)
-            {
-                RCLCPP_WARN(node_->get_logger(),
-                    "Excepción en AddLocation: %s", e.what());
-                prom->set_value(false);
-            }
-        });
+    bool completed =
+        call_service<
+            known_locations_interfaces::srv::LocationsServer>(
+                add_location_client_,
+                request,
+                [&](auto response)
+                {
+                    success = response->success;
 
-    if (fut.wait_for(500ms) == std::future_status::ready)
-        return fut.get();
+                    RCLCPP_INFO(
+                        node_->get_logger(),
+                        "AddLocation [%s] %s",
+                        location_name.c_str(),
+                        success ? "SUCCESS" : "FAILED");
+                },
+                timeout,
+                "AddLocation");
 
-    RCLCPP_WARN(node_->get_logger(),
-        "Timeout esperando AddLocation");
-    return false;
+    return completed && success;
 }
