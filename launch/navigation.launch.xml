@@ -3,6 +3,9 @@
   <arg name="namespace"
        default="navigation"
        description="" />
+  <arg name="namespace_hardware"
+       default="hardware"
+       description="" />
 
   <arg name="use_nav"
        default="true"
@@ -25,6 +28,12 @@
   <arg name="cloud_points_threshold"
        default="100"
        description="" />
+  <arg name="raw_point_cloud_topic"
+       default="/$(var namespace_hardware)/camera/points"
+       description="" />
+  <arg name="cloud_filter_input_qos_mode"
+       default="dual"
+       description="" />
   <arg name="laser_min_x"
        default="0.17"
        description="" />
@@ -41,12 +50,15 @@
   <group if="$(var use_nav)">
     <include file="$(find-pkg-share navigation_start)/launch/navigation.launch.xml">
       <arg name="namespace_nav" value="$(var namespace)" />
+      <arg name="namespace_hardware" value="$(var namespace_hardware)" />
       <arg name="use_sim_time" value="$(var use_sim_time)" />
       <arg name="use_lidar" value="$(var use_lidar)" />
       <arg name="use_point_cloud" value="$(var use_point_cloud)" />
       <arg name="use_pot_fields" value="$(var use_pot_fields)" />
       <arg name="cloud_downsampling" value="$(var cloud_downsampling)" />
       <arg name="cloud_points_threshold" value="$(var cloud_points_threshold)" />
+      <arg name="raw_point_cloud_topic" value="$(var raw_point_cloud_topic)" />
+      <arg name="cloud_filter_input_qos_mode" value="$(var cloud_filter_input_qos_mode)" />
       <arg name="laser_min_x" value="$(var laser_min_x)" />
       <arg name="laser_max_x" value="$(var laser_max_x)" />
       <arg name="laser_min_y" value="$(var laser_min_y)" />
