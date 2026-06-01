@@ -16,13 +16,41 @@
   <arg name="use_point_cloud"
        default="true"
        description="" />
+  <arg name="use_pot_fields"
+       default="false"
+       description="" />
+  <arg name="cloud_downsampling"
+       default="5"
+       description="" />
+  <arg name="cloud_points_threshold"
+       default="100"
+       description="" />
+  <arg name="laser_min_x"
+       default="0.17"
+       description="" />
+  <arg name="laser_max_x"
+       default="0.55"
+       description="" />
+  <arg name="laser_min_y"
+       default="-0.35"
+       description="" />
+  <arg name="laser_max_y"
+       default="0.35"
+       description="" />
 
   <group if="$(var use_nav)">
     <include file="$(find-pkg-share navigation_start)/launch/navigation.launch.xml">
-      <arg name="namespace" value="$(var namespace)" />
+      <arg name="namespace_nav" value="$(var namespace)" />
       <arg name="use_sim_time" value="$(var use_sim_time)" />
       <arg name="use_lidar" value="$(var use_lidar)" />
       <arg name="use_point_cloud" value="$(var use_point_cloud)" />
+      <arg name="use_pot_fields" value="$(var use_pot_fields)" />
+      <arg name="cloud_downsampling" value="$(var cloud_downsampling)" />
+      <arg name="cloud_points_threshold" value="$(var cloud_points_threshold)" />
+      <arg name="laser_min_x" value="$(var laser_min_x)" />
+      <arg name="laser_max_x" value="$(var laser_max_x)" />
+      <arg name="laser_min_y" value="$(var laser_min_y)" />
+      <arg name="laser_max_y" value="$(var laser_max_y)" />
     </include>
 
     <node
