@@ -1,4 +1,5 @@
 #include "navigation_tools/Navigation.hpp"
+#include <iostream>
 
 // ============================================================
 // Constructor
@@ -25,7 +26,7 @@ Navigation::Navigation(const rclcpp::Node::SharedPtr& node)
     add_location_client_ =
         node_->create_client<
             known_locations_interfaces::srv::LocationsServer>(
-                "/locations_manager/add_location",
+                "/locations_manager/add",
                 qos,
                 cb_group_clients_);
 }
