@@ -28,6 +28,9 @@
   <arg name="cloud_filter_debug"
        default="false"
        description="" />
+  <arg name="static_obstacle_ignore_radius"
+       default="0.10"
+       description="" />
   <arg name="cloud_points_threshold"
        default="20"
        description="" />
@@ -52,6 +55,9 @@
   <arg name="obstacle_inflation_radius"
        default="0.0"
        description="" />
+  <arg name="map_augmenter_debug"
+       default="false"
+       description="" />
   <arg name="simple_move_max_linear_speed"
        default="0.6"
        description="" />
@@ -74,10 +80,10 @@
        default="0.35"
        description="" />
   <arg name="laser_collision_min_y"
-       default="-0.22"
+       default="-0.25"
        description="" />
   <arg name="laser_collision_max_y"
-       default="0.22"
+       default="0.25"
        description="" />
   <arg name="cloud_min_x"
        default="0.30"
@@ -86,16 +92,16 @@
        default="1.50"
        description="" />
   <arg name="cloud_min_y"
-       default="-0.30"
+       default="-0.35"
        description="" />
   <arg name="cloud_max_y"
-       default="0.30"
+       default="0.35"
        description="" />
   <arg name="cloud_collision_min_y"
-       default="-0.22"
+       default="-0.25"
        description="" />
   <arg name="cloud_collision_max_y"
-       default="0.22"
+       default="0.25"
        description="" />
   <arg name="raw_point_cloud_topic"
        default="/$(var namespace_hardware)/camera/points"
@@ -114,6 +120,7 @@
       <arg name="use_pot_fields" value="$(var use_pot_fields)" />
       <arg name="cloud_downsampling" value="$(var cloud_downsampling)" />
       <arg name="cloud_filter_debug" value="$(var cloud_filter_debug)" />
+      <arg name="static_obstacle_ignore_radius" value="$(var static_obstacle_ignore_radius)" />
       <arg name="cloud_points_threshold" value="$(var cloud_points_threshold)" />
       <arg name="lidar_points_threshold" value="$(var lidar_points_threshold)" />
       <arg name="obstacle_decay_factor" value="$(var obstacle_decay_factor)" />
@@ -122,6 +129,7 @@
       <arg name="dynamic_obstacle_inflation_radius" value="$(var dynamic_obstacle_inflation_radius)" />
       <arg name="cost_radius" value="$(var cost_radius)" />
       <arg name="obstacle_inflation_radius" value="$(var obstacle_inflation_radius)" />
+      <arg name="map_augmenter_debug" value="$(var map_augmenter_debug)" />
       <arg name="simple_move_max_linear_speed" value="$(var simple_move_max_linear_speed)" />
       <arg name="simple_move_max_angular_speed" value="$(var simple_move_max_angular_speed)" />
       <arg name="simple_move_linear_acceleration" value="$(var simple_move_linear_acceleration)" />
