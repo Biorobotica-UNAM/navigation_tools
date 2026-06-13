@@ -20,13 +20,19 @@
        default="true"
        description="" />
   <arg name="use_pot_fields"
-       default="true"
+       default="false"
        description="" />
   <arg name="cloud_downsampling"
        default="4"
        description="" />
   <arg name="cloud_filter_debug"
        default="false"
+       description="" />
+  <arg name="cloud_filter_min_points_per_voxel"
+       default="2"
+       description="" />
+  <arg name="cloud_filter_min_neighbor_voxels"
+       default="2"
        description="" />
   <arg name="static_obstacle_ignore_radius"
        default="0.10"
@@ -37,8 +43,14 @@
   <arg name="lidar_points_threshold"
        default="20"
        description="" />
+  <arg name="obstacle_cloud_min_points_per_cell"
+       default="2"
+       description="" />
+  <arg name="obstacle_cloud_min_neighbor_cells"
+       default="2"
+       description="" />
   <arg name="obstacle_decay_factor"
-       default="5"
+       default="2"
        description="" />
   <arg name="robot_radius"
        default="0.35"
@@ -66,6 +78,9 @@
        description="" />
   <arg name="simple_move_linear_acceleration"
        default="0.10"
+       description="" />
+  <arg name="mvn_pln_proximity_criterion"
+       default="0.25"
        description="" />
   <arg name="laser_min_x"
        default="0.17"
@@ -120,9 +135,13 @@
       <arg name="use_pot_fields" value="$(var use_pot_fields)" />
       <arg name="cloud_downsampling" value="$(var cloud_downsampling)" />
       <arg name="cloud_filter_debug" value="$(var cloud_filter_debug)" />
+      <arg name="cloud_filter_min_points_per_voxel" value="$(var cloud_filter_min_points_per_voxel)" />
+      <arg name="cloud_filter_min_neighbor_voxels" value="$(var cloud_filter_min_neighbor_voxels)" />
       <arg name="static_obstacle_ignore_radius" value="$(var static_obstacle_ignore_radius)" />
       <arg name="cloud_points_threshold" value="$(var cloud_points_threshold)" />
       <arg name="lidar_points_threshold" value="$(var lidar_points_threshold)" />
+      <arg name="obstacle_cloud_min_points_per_cell" value="$(var obstacle_cloud_min_points_per_cell)" />
+      <arg name="obstacle_cloud_min_neighbor_cells" value="$(var obstacle_cloud_min_neighbor_cells)" />
       <arg name="obstacle_decay_factor" value="$(var obstacle_decay_factor)" />
       <arg name="robot_radius" value="$(var robot_radius)" />
       <arg name="static_obstacle_inflation_radius" value="$(var static_obstacle_inflation_radius)" />
@@ -133,6 +152,7 @@
       <arg name="simple_move_max_linear_speed" value="$(var simple_move_max_linear_speed)" />
       <arg name="simple_move_max_angular_speed" value="$(var simple_move_max_angular_speed)" />
       <arg name="simple_move_linear_acceleration" value="$(var simple_move_linear_acceleration)" />
+      <arg name="mvn_pln_proximity_criterion" value="$(var mvn_pln_proximity_criterion)" />
       <arg name="laser_min_x" value="$(var laser_min_x)" />
       <arg name="laser_max_x" value="$(var laser_max_x)" />
       <arg name="laser_min_y" value="$(var laser_min_y)" />
