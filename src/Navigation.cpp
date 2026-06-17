@@ -35,6 +35,12 @@ Navigation::Navigation(const rclcpp::Node::SharedPtr& node)
                 "/locations_manager/save",
                 qos,
                 cb_group_clients_);
+
+	goal_pub_ =
+		node_->create_publisher<
+		    geometry_msgs::msg::PoseStamped>(
+		        "/nav_control/goal",
+		        rclcpp::QoS(10));
 }
 
 // ============================================================
@@ -162,4 +168,22 @@ bool Navigation::AddLocation(
                 "AddLocation");
 
     return completed && success;
+}
+
+// ============================================================
+// Go
+// ============================================================
+
+void Navigation::Go(
+    const geometry_msgs::msg::PoseStamped& goal)
+{
+    goal_pub_->publish(goal);
+
+    RCLCPP_INFO(
+        node_->get_logger(),
+        "Navigation goal published: "
+        "[%.3f, %.3f, %.3f]",
+        goal.pose.position.x,
+        goal.pose.position.y,
+        goal.pose.position.z);
 }

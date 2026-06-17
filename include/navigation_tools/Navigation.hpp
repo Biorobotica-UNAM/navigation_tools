@@ -37,6 +37,7 @@
 #include <string>
 
 #include "geometry_msgs/msg/pose.hpp"
+#include "geometry_msgs/msg/pose_stamped.hpp"
 #include "known_locations_interfaces/srv/locations_get.hpp"
 #include "known_locations_interfaces/srv/locations_server.hpp"
 #include "known_locations_interfaces/srv/save_pose_location.hpp"
@@ -94,6 +95,15 @@ public:
                           const geometry_msgs::msg::Pose& pose,
                           std::chrono::seconds            timeout = 5s);
 
+	/**
+	 * @brief Publish a navigation goal.
+	 *
+	 * The pose is expected to be expressed in the map frame.
+	 *
+	 * @param goal Goal pose.
+	 */
+	void Go(const geometry_msgs::msg::PoseStamped& goal);
+
 private:
 
     rclcpp::Node::SharedPtr node_;
@@ -111,6 +121,10 @@ private:
     rclcpp::Client<
         known_locations_interfaces::srv::SavePoseLocation>::SharedPtr
             save_pose_client_;
+
+	rclcpp::Publisher<
+		geometry_msgs::msg::PoseStamped>::SharedPtr
+		    goal_pub_;
 
     /**
      * @brief Template Method:
