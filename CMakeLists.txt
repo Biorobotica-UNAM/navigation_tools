@@ -9,7 +9,7 @@ find_package(std_msgs REQUIRED)
 find_package(nlohmann_json REQUIRED)
 find_package(known_locations_interfaces REQUIRED)
 find_package(std_srvs REQUIRED)
-# find_package(geometry_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 # find_package(robotino_msgs REQUIRED)
 
 include_directories(
@@ -28,6 +28,7 @@ ament_target_dependencies(navigation_tools
   nlohmann_json
   known_locations_interfaces
   std_srvs
+  geometry_msgs
 )
 
 install(DIRECTORY include/
@@ -51,6 +52,7 @@ ament_export_dependencies(
   nlohmann_json
   known_locations_interfaces
   std_srvs
+  geometry_msgs
 )
 
 ament_package()

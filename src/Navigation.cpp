@@ -25,7 +25,14 @@ Navigation::Navigation(const rclcpp::Node::SharedPtr& node)
     add_location_client_ =
         node_->create_client<
             known_locations_interfaces::srv::LocationsServer>(
-                "/locations_manager/add_location",
+                "/locations_manager/add",
+                qos,
+                cb_group_clients_);
+
+    save_pose_client_ =
+        node_->create_client<
+            known_locations_interfaces::srv::SavePoseLocation>(
+                "/locations_manager/save",
                 qos,
                 cb_group_clients_);
 }
@@ -78,6 +85,46 @@ Navigation::GoToDetailed(const std::string& location_name,
     }
 
     return result;
+}
+
+// ============================================================
+// SavePoseLocation
+// ============================================================
+
+bool Navigation::SavePoseLocation(
+    const std::string&              location_name,
+    const geometry_msgs::msg::Pose& pose,
+    std::chrono::seconds            timeout)
+{
+    auto request =
+        std::make_shared<
+            known_locations_interfaces::srv::SavePoseLocation::Request>();
+
+    request->location_name = location_name;
+    request->pose          = pose;
+
+    bool success = false;
+
+    bool completed =
+        call_service<
+            known_locations_interfaces::srv::SavePoseLocation>(
+                save_pose_client_,
+                request,
+                [&](auto response)
+                {
+                    success = response->success;
+
+                    RCLCPP_INFO(
+                        node_->get_logger(),
+                        "SavePoseLocation [%s] %s: %s",
+                        location_name.c_str(),
+                        success ? "SUCCESS" : "FAILED",
+                        response->message.c_str());
+                },
+                timeout,
+                "SavePoseLocation");
+
+    return completed && success;
 }
 
 // ============================================================

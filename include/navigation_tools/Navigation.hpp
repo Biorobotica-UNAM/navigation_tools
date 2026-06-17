@@ -36,8 +36,10 @@
 #include <memory>
 #include <string>
 
+#include "geometry_msgs/msg/pose.hpp"
 #include "known_locations_interfaces/srv/locations_get.hpp"
 #include "known_locations_interfaces/srv/locations_server.hpp"
+#include "known_locations_interfaces/srv/save_pose_location.hpp"
 
 #include "rclcpp/rclcpp.hpp"
 
@@ -79,6 +81,19 @@ public:
     bool AddLocation(const std::string& location_name,
                      std::chrono::seconds timeout = 5s);
 
+    /**
+     * @brief Save an explicit map-frame pose as a known location.
+     *
+     * @param location_name Semantic location name.
+     * @param pose          Pose in the map frame.
+     * @param timeout       Maximum waiting time.
+     *
+     * @return true if operation succeeded.
+     */
+    bool SavePoseLocation(const std::string&              location_name,
+                          const geometry_msgs::msg::Pose& pose,
+                          std::chrono::seconds            timeout = 5s);
+
 private:
 
     rclcpp::Node::SharedPtr node_;
@@ -92,6 +107,10 @@ private:
     rclcpp::Client<
         known_locations_interfaces::srv::LocationsServer>::SharedPtr
             add_location_client_;
+
+    rclcpp::Client<
+        known_locations_interfaces::srv::SavePoseLocation>::SharedPtr
+            save_pose_client_;
 
     /**
      * @brief Template Method:
