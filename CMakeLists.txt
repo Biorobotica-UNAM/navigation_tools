@@ -10,6 +10,9 @@ find_package(nlohmann_json REQUIRED)
 find_package(known_locations_interfaces REQUIRED)
 find_package(std_srvs REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(tf2 REQUIRED)
+find_package(tf2_ros REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
 # find_package(robotino_msgs REQUIRED)
 
 include_directories(
@@ -29,6 +32,9 @@ ament_target_dependencies(navigation_tools
   known_locations_interfaces
   std_srvs
   geometry_msgs
+  tf2
+  tf2_ros
+  tf2_geometry_msgs
 )
 
 install(DIRECTORY include/

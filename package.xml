@@ -13,6 +13,9 @@
   <depend>nlohmann_json</depend>
   <depend>known_locations_interfaces</depend>
   <depend>std_srvs</depend>
+  <depend>tf2</depend>
+  <depend>tf2_ros</depend>
+  <depend>tf2_geometry_msgs</depend>
 
   <!-- <depend>geometry_msgs</depend> -->
   <!-- <depend>robotino_msgs</depend> -->

@@ -102,7 +102,7 @@ public:
 	 *
 	 * @param goal Goal pose.
 	 */
-	void Go(const geometry_msgs::msg::PoseStamped& goal);
+	bool Go(const geometry_msgs::msg::PoseStamped& goal);
 
 private:
 
